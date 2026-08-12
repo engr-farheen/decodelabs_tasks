@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skyline — Weather Dashboard</title>
+  <meta name="description" content="A clean, real-time weather dashboard. Search any city, check hourly and 7-day forecasts, air quality, and sun & moon data.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#A5856F">
+  <meta property="og:title" content="Skyline — Weather Dashboard">
+  <meta property="og:description" content="A clean, real-time weather dashboard. Search any city, check hourly and 7-day forecasts, air quality, and sun & moon data.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Skyline — Weather Dashboard">
+  <meta name="twitter:description" content="A clean, real-time weather dashboard. Search any city, check hourly and 7-day forecasts, air quality, and sun & moon data.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Skyline">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <h1 class="visually-hidden">Skyline — Live Weather Dashboard: current conditions, hourly and 7-day forecasts, air quality, and sun &amp; moon data for any city worldwide</h1>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#main" class="logo" aria-label="Skyline home">
+        <svg class="logo-mark" viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="24" height="24" rx="7" fill="var(--mocha)"/>
+          <circle cx="16.5" cy="7.5" r="3" fill="var(--blue)"/>
+          <path d="M2.5 18 V12.5 H6 V14.5 H9.5 V10 H13 V15 H16.5 V13 H20 V18 Z" fill="var(--white)"/>
+        </svg>
+        Skyline
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Primary">
+        <ul>
+          <li><a href="#current" class="nav-link" data-section="current">Now</a></li>
+          <li><a href="#hourly" class="nav-link" data-section="hourly">Hourly</a></li>
+          <li><a href="#daily" class="nav-link" data-section="daily">7-Day</a></li>
+          <li><a href="#sunmoon" class="nav-link" data-section="sunmoon">Sun &amp; Moon</a></li>
+          <li><a href="#airquality" class="nav-link" data-section="airquality">Air Quality</a></li>
+          <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+        </ul>
+      </nav>
+
+      <button class="unit-toggle" id="unitToggle" type="button" aria-label="Switch temperature unit">
+        <span class="unit active" data-unit="C">°C</span>
+        <span class="unit" data-unit="F">°F</span>
+      </button>
+
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+        <svg class="theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="5" fill="currentColor"/>
+          <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
+          </g>
+        </svg>
+        <svg class="theme-icon-moon" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 14.5A9 9 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="hero-banner" id="heroBanner" aria-hidden="true">
+    <svg viewBox="0 0 1200 220" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" class="skyline-svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--mocha)" stop-opacity="0.55"/>
+          <stop offset="100%" stop-color="var(--mocha)" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- sun/moon glow, swapped by JS via #heroOrb -->
+      <circle cx="1040" cy="70" r="90" fill="url(#glow)"/>
+      <circle id="heroOrb" cx="1040" cy="70" r="34" fill="var(--mocha)"/>
+
+      <!-- drifting clouds — cloud-d sits furthest back for parallax depth -->
+      <g class="cloud cloud-d" fill="var(--white)" opacity="0.4">
+        <path d="M560 30a12 12 0 0 1-1-24 16 16 0 0 1 30-5 11 11 0 0 1 5 21H560z"/>
+      </g>
+      <g class="cloud cloud-a" fill="var(--white)" opacity="0.8">
+        <path d="M120 100a22 22 0 0 1-2-44 29 29 0 0 1 54-9 20 20 0 0 1 9 38H120z"/>
+      </g>
+      <g class="cloud cloud-b" fill="var(--white)" opacity="0.65">
+        <path d="M420 60a17 17 0 0 1-1.5-34 22 22 0 0 1 41-7 15 15 0 0 1 7 29H420z"/>
+      </g>
+      <g class="cloud cloud-c" fill="var(--white)" opacity="0.7">
+        <path d="M760 40a15 15 0 0 1-1.3-30 20 20 0 0 1 37-6 13.5 13.5 0 0 1 6.3 26H760z"/>
+      </g>
+
+      <!-- Colorful city skyline — generated by JS (varied building shades + twinkling mocha/blue windows) -->
+      <g id="skylineGroup"></g>
+    </svg>
+
+    <!-- Premium light sweep — a single soft diagonal band that glides across
+         the skyline periodically. One element, near-zero perf cost, big visual payoff. -->
+    <div class="skyline-sweep" aria-hidden="true"></div>
+
+    <!-- Weather-reactive overlay layers — toggled by JS based on the real forecast -->
+    <div class="rain-layer" id="rainLayer" aria-hidden="true"></div>
+    <div class="snow-layer" id="snowLayer" aria-hidden="true"></div>
+    <div class="storm-flash" id="stormFlash" aria-hidden="true"></div>
+
+    <p class="hero-tagline" id="heroTagline">Live conditions, refined.</p>
+  </div>
+
+  <main id="main">
+
+    <!-- SEARCH -->
+    <section class="search-section" aria-label="Search for a location">
+      <form id="searchForm" class="search-form" role="search" autocomplete="off">
+        <div class="search-field">
+          <label for="citySearch" class="visually-hidden">Search city</label>
+          <input type="text" id="citySearch" name="citySearch" placeholder="Search a city — try Lahore, Tokyo, Paris…" aria-describedby="searchHint">
+          <button type="button" id="voiceBtn" class="voice-btn" aria-label="Search by voice" hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="currentColor"/>
+              <path d="M19 11a7 7 0 0 1-14 0" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <line x1="12" y1="18" x2="12" y2="22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <ul id="suggestions" class="suggestions" role="listbox" aria-label="City suggestions" hidden></ul>
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="button" id="locateBtn" class="btn btn-ghost" aria-label="Use my current location">
+          <span aria-hidden="true">📍</span> My location
+        </button>
+      </form>
+      <p id="searchHint" class="search-hint" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- CURRENT WEATHER -->
+    <section class="current-weather" id="current" aria-live="polite" aria-busy="false">
+      <div class="current-inner">
+        <div class="current-primary">
+          <p class="location-name" id="locationName">Loading…</p>
+          <p class="location-date" id="locationDate"></p>
+          <div class="temp-row">
+            <span class="temp-icon" id="tempIcon" aria-hidden="true"></span>
+            <span class="temp-value" id="tempValue">--°</span>
+          </div>
+          <p class="condition-label" id="conditionLabel">—</p>
+        </div>
+
+        <div class="current-stats" id="currentStats">
+          <!-- JS injects stat cards here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- HOURLY FORECAST -->
+    <section class="hourly-forecast" id="hourly">
+      <div class="section-head">
+        <p class="eyebrow">Next 24 hours</p>
+        <h2>Hourly Forecast</h2>
+      </div>
+      <div class="hourly-graph" id="hourlyGraph" aria-hidden="true">
+        <!-- JS injects an SVG temperature trend line here -->
+      </div>
+      <div class="hourly-scroll" id="hourlyScroll" tabindex="0" role="group" aria-label="Hourly forecast, scrollable">
+        <!-- JS injects hour cards here -->
+      </div>
+    </section>
+
+    <!-- DAILY FORECAST -->
+    <section class="daily-forecast" id="daily">
+      <div class="section-head">
+        <p class="eyebrow">The week ahead</p>
+        <h2>7-Day Forecast</h2>
+      </div>
+      <div class="daily-grid" id="dailyGrid">
+        <!-- JS injects day cards here -->
+      </div>
+    </section>
+
+    <!-- SUN & MOON -->
+    <section class="sun-moon" id="sunmoon">
+      <div class="section-head">
+        <p class="eyebrow">Day &amp; night</p>
+        <h2>Sun &amp; Moon</h2>
+      </div>
+      <div class="sunmoon-grid" id="sunmoonGrid">
+        <!-- JS injects sunrise/sunset + moon phase cards here -->
+      </div>
+    </section>
+
+    <!-- AIR QUALITY -->
+    <section class="air-quality" id="airquality">
+      <div class="section-head">
+        <p class="eyebrow">What you're breathing</p>
+        <h2>Air Quality</h2>
+      </div>
+      <div class="aq-card" id="aqCard">
+        <!-- JS injects AQI gauge + health message + pollutant stats here -->
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+      <article class="about-card">
+        <h2>About this dashboard</h2>
+        <p>Skyline pulls live forecast data straight from Open-Meteo's public weather API — no sign-up, no tracking. Search any city worldwide, or tap "My location" to see conditions where you are right now. Beyond the forecast, Skyline also shows sunrise/sunset times, the current moon phase, and real-time air quality (US AQI) sourced from CAMS atmospheric data. Toggle between °C and °F any time; every number on the page updates instantly.</p>
+      </article>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg class="logo-mark" viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="24" height="24" rx="7" fill="var(--mocha)"/>
+          <circle cx="16.5" cy="7.5" r="3" fill="var(--blue)"/>
+          <path d="M2.5 18 V12.5 H6 V14.5 H9.5 V10 H13 V15 H16.5 V13 H20 V18 Z" fill="var(--white)"/>
+        </svg>
+        <span>Skyline</span>
+      </div>
+      <p class="footer-copy">Weather data by <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer">Open-Meteo.com</a> · Air quality by CAMS · © 2026 Skyline</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

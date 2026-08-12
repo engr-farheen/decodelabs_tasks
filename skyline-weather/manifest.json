@@ -1,0 +1,16 @@
+{
+  "name": "Skyline — Weather Dashboard",
+  "short_name": "Skyline",
+  "description": "A clean, real-time weather dashboard with hourly and 7-day forecasts, air quality, and sun & moon data.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F2F0EA",
+  "theme_color": "#A5856F",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }
+  ]
+}
