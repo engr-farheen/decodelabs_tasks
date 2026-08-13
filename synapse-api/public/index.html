@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synapse — URL Shortener API</title>
+  <meta name="description" content="Synapse: a production-style REST API for shortening URLs, with JWT auth, click analytics, and interactive documentation.">
+  <meta name="theme-color" content="#0A0B0F">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0B0F;
+      --surface: #14151C;
+      --surface-2: #1B1D27;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --text: #EDEDF2;
+      --text-soft: #9A9AAC;
+      --indigo: #7C6FFF;
+      --cyan: #22D3EE;
+      --emerald: #34D399;
+      --gradient: linear-gradient(120deg, var(--indigo), var(--cyan));
+      --font-head: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(124,111,255,0.18) 0%, rgba(34,211,238,0.08) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+    }
+    header, main, footer { position: relative; z-index: 1; }
+    header {
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+    .logo-mark {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: var(--gradient);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bg);
+    }
+    header span.wordmark {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 72px 24px 56px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--cyan);
+      background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.25);
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+    h1 {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: clamp(2.1rem, 6vw, 3.2rem);
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      margin: 20px 0 18px;
+    }
+    h1 .grad {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    p.lead {
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      max-width: 58ch;
+    }
+    p.lead code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: var(--cyan);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 32px 0 48px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 22px;
+      border-radius: 10px;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--gradient);
+      color: #0A0B0F;
+    }
+    .btn-primary:hover { box-shadow: 0 8px 24px rgba(124,111,255,0.35); }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.15s ease;
+    }
+    .card:hover { border-color: var(--border-hover); }
+    .card .tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--indigo);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .card h3 {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      margin: 8px 0 6px;
+    }
+    .card p {
+      font-size: 0.87rem;
+      color: var(--text-soft);
+      margin: 0;
+    }
+    .status-strip {
+      margin-top: 48px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    .status-strip span {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      color: var(--text-soft);
+    }
+    .status-strip span b { color: var(--emerald); }
+    footer {
+      text-align: center;
+      padding: 28px 24px 40px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="logo-mark" aria-hidden="true">S</span>
+    <span class="wordmark">synapse</span>
+  </header>
+
+  <main>
+    <span class="eyebrow">API status: operational</span>
+    <h1>Shorten links.<br><span class="grad">Trace every click.</span></h1>
+    <p class="lead">
+      A production-style REST API — JWT auth, ownership-based authorization, rate limiting,
+      and full click analytics on every link. Redirect endpoint at <code>/:code</code>,
+      everything else documented and executable below.
+    </p>
+
+    <div class="actions">
+      <a href="/api-docs" class="btn btn-primary">Explore the API →</a>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <span class="tag">Auth</span>
+        <h3>Stateless JWT</h3>
+        <p>Every link is owned by its creator. No session store, no shared state.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Analytics</span>
+        <h3>Click tracking</h3>
+        <p>Referrer, timestamp, and daily breakdown captured per link.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Resilience</span>
+        <h3>Rate-limited</h3>
+        <p>Validated inputs, consistent errors, and abuse protection built in.</p>
+      </div>
+    </div>
+
+    <div class="status-strip">
+      <span>GET /health → <b>200</b></span>
+      <span>POST /api/links → <b>201</b></span>
+      <span>GET /:code → <b>302</b></span>
+    </div>
+  </main>
+
+  <footer>
+    docs at <a href="/api-docs">/api-docs</a> · built for DecodeLabs — Project 2: Backend API Development
+  </footer>
+</body>
+</html>
