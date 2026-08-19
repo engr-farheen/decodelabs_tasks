@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Task Manager — Control Sheet</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <p class="auth-card__eyebrow">Smart Task &amp; Project Management</p>
+    <h1 class="auth-card__title">Sign in to your sheet</h1>
+
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab is-active" id="tabLogin" type="button" role="tab">Log in</button>
+      <button class="auth-tab" id="tabRegister" type="button" role="tab">Register</button>
+    </div>
+
+    <form id="loginForm" class="auth-form">
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="loginEmail" required autocomplete="email" placeholder="you@example.com" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••" />
+      </label>
+      <p class="auth-error" id="loginError" hidden></p>
+      <button type="submit" class="btn btn--primary btn--block">Log in</button>
+    </form>
+
+    <form id="registerForm" class="auth-form" hidden>
+      <label class="field">
+        <span>Name</span>
+        <input type="text" id="registerName" required autocomplete="name" placeholder="Ada Lovelace" />
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" id="registerEmail" required autocomplete="email" placeholder="you@example.com" />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input type="password" id="registerPassword" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters" />
+      </label>
+      <p class="auth-error" id="registerError" hidden></p>
+      <button type="submit" class="btn btn--primary btn--block">Create account</button>
+    </form>
+
+    <button class="auth-settings" id="authSettingsBtn" type="button">API endpoint settings</button>
+  </div>
+</div>
+
+<!-- API base URL popover (available on both screens) -->
+<div class="popover popover--center" id="settingsPopover" hidden>
+  <p class="popover__title">API endpoint</p>
+  <label class="field">
+    <span>Base URL</span>
+    <input type="text" id="apiBaseInput" placeholder="http://localhost:5000/api" />
+  </label>
+  <div class="popover__actions">
+    <button class="btn btn--ghost" id="cancelSettingsBtn" type="button">Cancel</button>
+    <button class="btn btn--primary" id="saveSettingsBtn" type="button">Save</button>
+  </div>
+</div>
+
+<!-- Profile popover (1:1 User <-> UserProfile) -->
+<div class="popover popover--center" id="profilePopover" hidden>
+  <p class="popover__title">Your profile</p>
+  <label class="field">
+    <span>Bio</span>
+    <textarea id="profileBio" rows="3" maxlength="300" placeholder="A short bio…"></textarea>
+  </label>
+  <label class="field">
+    <span>Phone</span>
+    <input type="text" id="profilePhone" maxlength="30" placeholder="+1 555 0100" />
+  </label>
+  <label class="field">
+    <span>Avatar URL</span>
+    <input type="text" id="profileAvatar" maxlength="500" placeholder="https://…" />
+  </label>
+  <div class="popover__actions">
+    <button class="btn btn--ghost" id="cancelProfileBtn" type="button">Cancel</button>
+    <button class="btn btn--primary" id="saveProfileBtn" type="button">Save</button>
+  </div>
+</div>
+
+<!-- ============ APP SCREEN ============ -->
+<div class="app" id="appScreen" hidden>
+
+  <header class="title-block">
+    <div class="title-block__id">
+      <h1 class="title-block__name">Smart Task Manager</h1>
+      <p class="title-block__caption" id="userGreeting">Control Sheet</p>
+    </div>
+
+    <div class="title-block__cells">
+      <div class="cell">
+        <span class="cell__label">Sheet</span>
+        <span class="cell__value" id="sheetDate">No. 01</span>
+      </div>
+      <div class="cell">
+        <span class="cell__label">Docs</span>
+        <a class="cell__value cell__link" id="docsLink" href="#" target="_blank" rel="noopener">Swagger /api-docs</a>
+      </div>
+      <div class="cell cell--status">
+        <span class="cell__label">Connection</span>
+        <button id="statusBtn" class="status-pill" type="button">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Connecting…</span>
+        </button>
+      </div>
+      <div class="cell">
+        <button class="btn btn--ghost" id="profileBtn" type="button">Profile</button>
+      </div>
+      <div class="cell">
+        <button class="btn btn--ghost" id="logoutBtn" type="button">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard summary -->
+  <section class="stat-row" id="statRow" aria-label="Dashboard summary">
+    <div class="stat-card">
+      <span class="stat-card__label">Total</span>
+      <span class="stat-card__value" id="statTotal">—</span>
+    </div>
+    <div class="stat-card stat-card--pending">
+      <span class="stat-card__label">Pending</span>
+      <span class="stat-card__value" id="statPending">—</span>
+    </div>
+    <div class="stat-card stat-card--done">
+      <span class="stat-card__label">Completed</span>
+      <span class="stat-card__value" id="statCompleted">—</span>
+    </div>
+    <div class="stat-card stat-card--high">
+      <span class="stat-card__label">High priority open</span>
+      <span class="stat-card__value" id="statHigh">—</span>
+    </div>
+  </section>
+
+  <div class="workspace">
+
+    <!-- Projects rail -->
+    <aside class="layers-rail" aria-label="Projects">
+      <h2 class="rail-heading">Projects</h2>
+      <p class="rail-sub">Filter tasks by project</p>
+      <ul class="layer-list" id="projectList">
+        <!-- populated by app.js; includes an "All projects" entry -->
+      </ul>
+      <form class="layer-add" id="projectAddForm">
+        <input type="text" id="projectAddInput" placeholder="New project…" maxlength="40" />
+        <button type="submit" class="btn-icon" aria-label="Add project">+</button>
+      </form>
+
+      <div class="rail-divider"></div>
+
+      <h2 class="rail-heading">Tags</h2>
+      <p class="rail-sub">Many-to-many: reused across tasks</p>
+      <ul class="layer-list" id="tagList">
+        <!-- populated by app.js -->
+      </ul>
+      <form class="layer-add" id="tagAddForm">
+        <input type="text" id="tagAddInput" placeholder="New tag…" maxlength="24" />
+        <button type="submit" class="btn-icon" aria-label="Add tag">+</button>
+      </form>
+    </aside>
+
+    <!-- Task ledger -->
+    <main class="ledger">
+
+      <div class="ledger__toolbar">
+        <input type="search" id="searchInput" class="search-input" placeholder="Search tasks by title…" />
+        <select id="statusFilter" class="select select--auto">
+          <option value="">All statuses</option>
+          <option value="todo">Todo</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+        <select id="priorityFilter" class="select select--auto">
+          <option value="">All priorities</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <select id="tagFilter" class="select select--auto">
+          <option value="">All tags</option>
+        </select>
+        <button class="btn btn--ghost" id="clearFiltersBtn" type="button">Clear</button>
+      </div>
+
+      <div class="ledger__table-wrap">
+        <table class="ledger__table">
+          <thead>
+            <tr>
+              <th class="col-num">Item</th>
+              <th>Title</th>
+              <th>Project</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Due</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerBody">
+            <!-- populated by app.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ledger__footer">
+        <span class="ledger__count" id="resultsCount">—</span>
+        <div class="pagination" id="pagination">
+          <button class="btn-icon" id="prevPageBtn" type="button" aria-label="Previous page">‹</button>
+          <span class="pagination__label" id="pageLabel">Page 1 of 1</span>
+          <button class="btn-icon" id="nextPageBtn" type="button" aria-label="Next page">›</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- New/Edit Task FAB + drawer -->
+<button class="fab" id="newTaskBtn" type="button" hidden>
+  <span class="fab__plus">+</span>
+  <span>New Task</span>
+</button>
+
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="drawer" id="taskDrawer" aria-hidden="true">
+  <form id="taskForm">
+    <div class="drawer__head">
+      <p class="drawer__eyebrow" id="drawerEyebrow">Work Order — New</p>
+      <h2 id="drawerTitle">New Task</h2>
+      <button type="button" class="btn-icon" id="closeDrawerBtn" aria-label="Close">×</button>
+    </div>
+
+    <label class="field">
+      <span>Title <em>*</em></span>
+      <input type="text" id="fieldTitle" required maxlength="120" placeholder="e.g. Design the schema" />
+    </label>
+
+    <label class="field">
+      <span>Description</span>
+      <textarea id="fieldDesc" rows="3" maxlength="500" placeholder="Notes, context, acceptance criteria…"></textarea>
+    </label>
+
+    <label class="field">
+      <span>Project <em>*</em></span>
+      <select id="fieldProject" required></select>
+    </label>
+
+    <fieldset class="field">
+      <legend>Tags</legend>
+      <div class="checkbox-list" id="fieldTags">
+        <p class="muted" id="noTagsHint">No tags yet — add one from the Tags rail.</p>
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Priority</span>
+        <select id="fieldPriority">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select id="fieldStatus">
+          <option value="todo">Todo</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="field">
+      <span>Due date</span>
+      <input type="date" id="fieldDue" />
+    </label>
+
+    <div class="drawer__footer">
+      <button type="button" class="btn btn--danger" id="deleteTaskBtn" hidden>Delete</button>
+      <div class="drawer__footer-right">
+        <button type="button" class="btn btn--ghost" id="cancelDrawerBtn">Cancel</button>
+        <button type="submit" class="btn btn--primary">Save task</button>
+      </div>
+    </div>
+  </form>
+</aside>
+
+<div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
