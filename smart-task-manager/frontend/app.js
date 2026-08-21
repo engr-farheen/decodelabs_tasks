@@ -5,7 +5,7 @@
    ========================================================= */
 
 const state = {
-  apiBase: localStorage.getItem('stm_api_base') || 'http://localhost:5000/api',
+  apiBase: localStorage.getItem('stm_api_base') || 'https://smarttaskmanager-djgllckn.b4a.run/api',
   token: localStorage.getItem('stm_token') || '',
   currentUser: null,
 
