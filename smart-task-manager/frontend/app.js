@@ -5,7 +5,7 @@
    ========================================================= */
 
 const state = {
-  apiBase: localStorage.getItem('stm_api_base') || 'https://smarttaskmanager-djgllckn.b4a.run/api',
+  apiBase: localStorage.getItem('stm_api_base') || 'https://decodelabs-tasks-v0qv.onrender.com/api',
   token: localStorage.getItem('stm_token') || '',
   currentUser: null,
 
