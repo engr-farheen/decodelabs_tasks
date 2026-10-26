@@ -24,7 +24,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(generalLimiter);
 
 // ---- Static landing page ----
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // ---- API documentation ----
 const swaggerDarkTheme = `
