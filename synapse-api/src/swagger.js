@@ -10,7 +10,7 @@ const options = {
         'A production-style URL shortener API. Every endpoint below is live — ' +
         'use "Try it out" to send real requests against this running server.',
     },
-    servers: [{ url: process.env.BASE_URL || 'http://localhost:3000' }],
+    servers: [{ url: process.env.BASE_URL || 'https://synapse-api-p4y1.onrender.com' }],
     components: {
       securitySchemes: {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
